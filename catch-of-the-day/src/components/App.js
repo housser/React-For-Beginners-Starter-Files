@@ -20,18 +20,35 @@ class App extends React.Component {
 
     this.addFish = this.addFish.bind( this );
     this.loadSamples = this.loadSamples.bind( this );
-    this.addToOrder = this.addToOrder.bind(this)
+    this.addToOrder = this.addToOrder.bind(this);
+
   }
 
   componentWillMount() {
+    // This runs right before the App is rendered
     this.base = base.syncState(`${this.props.params.storeId}/fishes`, {
       context: this,
       state: 'fishes'
     })
+
+    // check if there's any order data in local storage
+    const localStorageRef = localStorage.getItem(`order-${this.props.params.storeId}`)
+
+    if(localStorageRef) {
+      // pudate our App component's order state
+      this.setState({ order: JSON.parse(localStorageRef) })
+    }
   }
 
   componentWillUnmount() {
     base.removeBinding(this.base);
+  }
+
+  componentWillUpdate(newProps, newState) {
+    console.log('something changed');
+    console.log({ newProps, newState });
+
+    localStorage.setItem(`order-${this.props.params.storeId}`, JSON.stringify(newState.order));
   }
 
   addFish( fish ) {
