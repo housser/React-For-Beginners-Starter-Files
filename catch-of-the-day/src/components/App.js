@@ -20,8 +20,10 @@ class App extends React.Component {
 
     this.addFish = this.addFish.bind( this );
     this.updateFish = this.updateFish.bind(this)
+    this.removeFish = this.removeFish.bind(this);
     this.loadSamples = this.loadSamples.bind( this );
     this.addToOrder = this.addToOrder.bind(this);
+    this.removeFromOrder = this.removeFromOrder.bind(this);
 
   }
 
@@ -69,6 +71,12 @@ class App extends React.Component {
     this.setState({ fishes })
   }
 
+  removeFish(key) {
+    const fishes = {...this.state.fishes}
+    fishes[key] = null // can't do "delete fishes[key]" since there's some weirdness with firebase sync
+    this.setState({ fishes })
+  }
+
   loadSamples() {
     console.log( 'Load 🐠 🐟 🐡' );
 
@@ -87,6 +95,13 @@ class App extends React.Component {
     this.setState({ order });
   }
 
+  removeFromOrder(key) {
+    const order = {...this.state.order}
+    // order[key] = null; // this left a null value'd member in the order. This isn't using firebase, so I switched to use {delete}
+    delete order[key];
+    this.setState({ order })
+  }
+
   render() {
     return (
       <div className="catch-of-the-day">
@@ -100,8 +115,8 @@ class App extends React.Component {
             }
           </ul>
         </div>
-        <Order fishes={this.state.fishes} order={this.state.order} />
-        <Inventory fishes={this.state.fishes} addFish={this.addFish} updateFish={this.updateFish} loadSamples={this.loadSamples}/>
+        <Order fishes={this.state.fishes} order={this.state.order} removeFromOrder={this.removeFromOrder} />
+        <Inventory fishes={this.state.fishes} addFish={this.addFish} updateFish={this.updateFish} removeFish={this.removeFish} loadSamples={this.loadSamples}/>
       </div>
     );
   }
